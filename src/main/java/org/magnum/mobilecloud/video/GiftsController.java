@@ -22,6 +22,7 @@ import com.google.common.collect.Lists;
 import org.magnum.mobilecloud.video.repository.Gift;
 import org.magnum.mobilecloud.video.repository.GiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +56,7 @@ public class GiftsController {
 	@Autowired
 	private GiftRepository gifts;
 	
-//	@PreAuthorize("hasRole(mobile)")
+	@PreAuthorize("hasRole(mobile)")
 	@RequestMapping(value = GIFTS_PATH, method=RequestMethod.GET)
     public @ResponseBody Collection<Gift>
     getGifts(
