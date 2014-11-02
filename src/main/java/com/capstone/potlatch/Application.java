@@ -1,15 +1,19 @@
-package org.magnum.mobilecloud.video;
+package com.capstone.potlatch;
 
-import org.magnum.mobilecloud.video.auth.OAuth2SecurityConfiguration;
-import org.magnum.mobilecloud.video.repository.GiftRepository;
+import com.capstone.potlatch.auth.OAuth2SecurityConfiguration;
+import com.capstone.potlatch.models.GiftRepository;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import javax.sql.DataSource;
 
 @Import(OAuth2SecurityConfiguration.class)
 // Tell Spring to automatically create a JPA implementation of our
@@ -31,6 +35,16 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan
 public class Application extends RepositoryRestMvcConfiguration {
 
+    @Bean
+    public DataSource getDataSource() {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setUrl("jdbc:mysql://localhost:3306/potlatch");
+        dataSource.setUsername("root");
+        dataSource.setPassword("");
+
+        return dataSource;
+    }
 	// The app now requires that you pass the location of the keystore and
 	// the password for your private key that you would like to setup HTTPS
 	// with. In Eclipse, you can set these options by going to:
