@@ -33,34 +33,19 @@ import java.util.Collection;
 
 @Controller
 public class GiftsController {
-    public static final String TITLE_PARAMETER = "title";
 
-    public static final String GIFTS_PATH = "/gifts";
-	
-	/**
-	 * You will need to create one or more Spring controllers to fulfill the
-	 * requirements of the assignment. If you use this file, please rename it
-	 * to something other than "AnEmptyController"
-	 * 
-	 * 
-		 ________  ________  ________  ________          ___       ___  ___  ________  ___  __       
-		|\   ____\|\   __  \|\   __  \|\   ___ \        |\  \     |\  \|\  \|\   ____\|\  \|\  \     
-		\ \  \___|\ \  \|\  \ \  \|\  \ \  \_|\ \       \ \  \    \ \  \\\  \ \  \___|\ \  \/  /|_   
-		 \ \  \  __\ \  \\\  \ \  \\\  \ \  \ \\ \       \ \  \    \ \  \\\  \ \  \    \ \   ___  \  
-		  \ \  \|\  \ \  \\\  \ \  \\\  \ \  \_\\ \       \ \  \____\ \  \\\  \ \  \____\ \  \\ \  \ 
-		   \ \_______\ \_______\ \_______\ \_______\       \ \_______\ \_______\ \_______\ \__\\ \__\
-		    \|_______|\|_______|\|_______|\|_______|        \|_______|\|_______|\|_______|\|__| \|__|
-                                                                                                                                                                                                                                                                        
-	 * 
-	 */
 	@Autowired
 	private GiftRepository gifts;
-	
+
+    //Todo: create the real gift model
+    //Todo: create the create gift method
+    //Todo: This method should be public
+
 	@PreAuthorize("hasRole(mobile)")
-	@RequestMapping(value = GIFTS_PATH, method=RequestMethod.GET)
-    public @ResponseBody Collection<Gift>
-    getGifts(
-            @RequestParam(value = TITLE_PARAMETER, required = false) String title
+	@RequestMapping(value = Routes.GIFTS_PATH, method=RequestMethod.GET)
+    public
+    @ResponseBody Collection<Gift> getGifts(
+    @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title
     ) {
         if (title == null) {
             return Lists.newArrayList(gifts.findAll());

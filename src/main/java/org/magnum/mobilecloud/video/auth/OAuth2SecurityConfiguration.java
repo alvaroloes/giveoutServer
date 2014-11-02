@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
+import org.magnum.mobilecloud.video.Routes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -65,11 +67,17 @@ public class OAuth2SecurityConfiguration {
 		private UserDetailsService userDetailsService;
 
 		@Autowired
-		protected void registerAuthentication(
-				final AuthenticationManagerBuilder auth) throws Exception {
+		protected void registerAuthentication(final AuthenticationManagerBuilder auth) throws Exception {
 			auth.userDetailsService(userDetailsService);
 		}
-	}
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web.ignoring().antMatchers(HttpMethod.GET,
+                    Routes.GIFTS_PATH
+            );
+        }
+    }
 
 	/**
 	 *	This method is used to configure who is allowed to access which parts of our
@@ -137,7 +145,6 @@ public class OAuth2SecurityConfiguration {
 		 * this code for testing, at the bare minimum, you should consider changing the
 		 * passwords listed below and updating the VideoSvcClientApiTest.
 		 *
-		 * @param auth
 		 * @throws Exception
 		 */
 		public OAuth2Config() throws Exception {
@@ -159,7 +166,7 @@ public class OAuth2SecurityConfiguration {
 					// video service
 					.withClient("mobileReader").authorizedGrantTypes("password")
 					.authorities("ROLE_CLIENT")
-					.scopes("read").resourceIds("video")
+					.scopes("read").resourceIds("gift")
 					.accessTokenValiditySeconds(3600).and().build();
 
 			// Create a series of hard-coded users.
