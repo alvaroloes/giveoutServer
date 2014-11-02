@@ -4,7 +4,7 @@
 **
 **
 */
-package org.magnum.mobilecloud.video.auth;
+package com.capstone.potlatch.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

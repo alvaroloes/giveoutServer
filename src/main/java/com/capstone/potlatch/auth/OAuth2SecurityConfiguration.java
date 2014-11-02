@@ -1,11 +1,11 @@
-package org.magnum.mobilecloud.video.auth;
+package com.capstone.potlatch.auth;
 
 import java.io.File;
 import java.util.Arrays;
 
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
-import org.magnum.mobilecloud.video.Routes;
+import com.capstone.potlatch.Routes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -157,13 +157,13 @@ public class OAuth2SecurityConfiguration {
 			// Create a service that has the credentials for all our clients
 			ClientDetailsService csvc = new InMemoryClientDetailsServiceBuilder()
 					// Create a client that has "read" and "write" access to the
-			        // video service
+			        // gift service
 					.withClient("mobile").authorizedGrantTypes("password")
 					.authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
 					.scopes("read","write").resourceIds("gift")
 					.and()
 					// Create a second client that only has "read" access to the
-					// video service
+					// gift service
 					.withClient("mobileReader").authorizedGrantTypes("password")
 					.authorities("ROLE_CLIENT")
 					.scopes("read").resourceIds("gift")

@@ -1,4 +1,4 @@
-package org.magnum.mobilecloud.video;
+package com.capstone.potlatch;
 
 /**
  * Created by alvaro on 2/11/14.

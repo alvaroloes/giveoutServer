@@ -16,19 +16,18 @@
  * 
  */
 
-package org.magnum.mobilecloud.video;
+package com.capstone.potlatch;
 
+import com.capstone.potlatch.models.User;
 import com.google.common.collect.Lists;
-import org.magnum.mobilecloud.video.repository.Gift;
-import org.magnum.mobilecloud.video.repository.GiftRepository;
+import com.capstone.potlatch.models.Gift;
+import com.capstone.potlatch.models.GiftRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Collection;
 
 @Controller
@@ -37,29 +36,29 @@ public class GiftsController {
 	@Autowired
 	private GiftRepository gifts;
 
-    //Todo: create the real gift model
-    //Todo: create the create gift method
-    //Todo: This method should be public
-
-	@PreAuthorize("hasRole(mobile)")
 	@RequestMapping(value = Routes.GIFTS_PATH, method=RequestMethod.GET)
-    public
-    @ResponseBody Collection<Gift> getGifts(
-    @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title
-    ) {
+    public @ResponseBody Collection<Gift> list(
+           @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title)
+    {
         if (title == null) {
             return Lists.newArrayList(gifts.findAll());
         } else {
             return Lists.newArrayList(gifts.findByTitle(title));
         }
     }
-//
-//	@PreAuthorize("hasRole(mobile)")
-//	@RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH, method = RequestMethod.POST)
-//	public @ResponseBody Video addVideo(@RequestBody Video video, Principal p) {
-//		gifts.save(video);
-//		return video;
-//	}
+
+	@PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.GIFTS_PATH, method = RequestMethod.POST)
+	public @ResponseBody Gift create(
+           @RequestBody Gift gift,
+           Principal p)
+    {
+//        User u = new User();
+//        u.setNickname(p.getName());
+//        gift.setUser(u);
+		gifts.save(gift);
+		return gift;
+	}
 //
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}", method = RequestMethod.GET)

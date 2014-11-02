@@ -4,7 +4,7 @@
 **
 **
 */
-package org.magnum.mobilecloud.video.auth;
+package com.capstone.potlatch.auth;
 
 import java.util.Collection;
 import java.util.Collections;
