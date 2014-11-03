@@ -11,6 +11,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.Database;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.sql.DataSource;
@@ -37,6 +41,7 @@ public class Application extends RepositoryRestMvcConfiguration {
 
     @Bean
     public DataSource getDataSource() {
+
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/potlatch");
@@ -45,23 +50,25 @@ public class Application extends RepositoryRestMvcConfiguration {
 
         return dataSource;
     }
-	// The app now requires that you pass the location of the keystore and
-	// the password for your private key that you would like to setup HTTPS
-	// with. In Eclipse, you can set these options by going to:
-	//    1. Run->Run Configurations
-	//    2. Under Java Applications, select your run configuration for this app
-	//    3. Open the Arguments tab
-	//    4. In VM Arguments, provide the following information to use the
-	//       default keystore provided with the sample code:
-	//
-	//       -Dkeystore.file=src/main/resources/private/keystore -Dkeystore.pass=changeit
-	//
-	//    5. Note, this keystore is highly insecure! If you want more securtiy, you 
-	//       should obtain a real SSL certificate:
-	//
-	//       http://tomcat.apache.org/tomcat-7.0-doc/ssl-howto.html
-	//
-	// Tell Spring to launch our app!
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+        LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
+        lef.setDataSource(dataSource);
+        lef.setJpaVendorAdapter(jpaVendorAdapter);
+        lef.setPackagesToScan("com.capstone.potlatch.models");
+        return lef;
+    }
+
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
+        hibernateJpaVendorAdapter.setShowSql(true);
+        hibernateJpaVendorAdapter.setGenerateDdl(true);
+        hibernateJpaVendorAdapter.setDatabase(Database.MYSQL);
+        return hibernateJpaVendorAdapter;
+    }
+
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
