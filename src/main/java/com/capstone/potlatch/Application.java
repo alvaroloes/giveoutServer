@@ -39,16 +39,18 @@ import javax.sql.DataSource;
 @ComponentScan
 public class Application extends RepositoryRestMvcConfiguration {
 
-    @Bean
-    public DataSource getDataSource() {
-
+    public static DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         dataSource.setUrl("jdbc:mysql://localhost:3306/potlatch");
         dataSource.setUsername("root");
         dataSource.setPassword("");
-
         return dataSource;
+    }
+
+    @Bean
+    public DataSource getDataSource() {
+        return Application.dataSource();
     }
 
     @Bean

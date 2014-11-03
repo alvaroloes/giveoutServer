@@ -3,6 +3,7 @@ package com.capstone.potlatch.auth;
 import java.io.File;
 import java.util.Arrays;
 
+import com.capstone.potlatch.Application;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
 import com.capstone.potlatch.Routes;
@@ -25,6 +26,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
+import org.springframework.security.oauth2.config.annotation.builders.JdbcClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -32,7 +34,9 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 /**
 *	Configure this web application to use OAuth 2.0.
@@ -81,38 +85,29 @@ public class OAuth2SecurityConfiguration {
 
 	/**
 	 *	This method is used to configure who is allowed to access which parts of our
-	 *	resource server (i.e. the "/video" endpoint)
+	 *	resource server
 	 */
 	@Configuration
 	@EnableResourceServer
-	protected static class ResourceServer extends
-			ResourceServerConfigurerAdapter {
+	protected static class ResourceServer extends ResourceServerConfigurerAdapter {
 
 		// This method configures the OAuth scopes required by clients to access
-		// all of the paths in the video service.
+		// all of the paths
 		@Override
 		public void configure(HttpSecurity http) throws Exception {
 
 			http.csrf().disable();
 
-			http
-			.authorizeRequests()
+			http.authorizeRequests()
 				.antMatchers("/oauth/token").anonymous();
 
-
-			// If you were going to reuse this class in another
-			// application, this is one of the key sections that you
-			// would want to change
-
 			// Require all GET requests to have client "read" scope
-			http
-			.authorizeRequests()
+			http.authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/**")
 				.access("#oauth2.hasScope('read')");
 
 			// Require all other requests to have "write" scope
-			http
-			.authorizeRequests()
+			http.authorizeRequests()
 				.antMatchers("/**")
 				.access("#oauth2.hasScope('write')");
 		}
@@ -126,8 +121,7 @@ public class OAuth2SecurityConfiguration {
 	@Configuration
 	@EnableAuthorizationServer
 	@Order(Ordered.LOWEST_PRECEDENCE - 100)
-	protected static class OAuth2Config extends
-			AuthorizationServerConfigurerAdapter {
+	protected static class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 
 		// Delegate the processing of Authentication requests to the framework
 		@Autowired
@@ -148,37 +142,34 @@ public class OAuth2SecurityConfiguration {
 		 * @throws Exception
 		 */
 		public OAuth2Config() throws Exception {
-
-			// If you were going to reuse this class in another
-			// application, this is one of the key sections that you
-			// would want to change
-
-
 			// Create a service that has the credentials for all our clients
 			ClientDetailsService csvc = new InMemoryClientDetailsServiceBuilder()
 					// Create a client that has "read" and "write" access to the
 			        // gift service
 					.withClient("mobile").authorizedGrantTypes("password")
-					.authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
-					.scopes("read","write").resourceIds("gift")
+                                         .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
+                                         .scopes("read","write")
+                                         .resourceIds("gift")
 					.and()
 					// Create a second client that only has "read" access to the
 					// gift service
 					.withClient("mobileReader").authorizedGrantTypes("password")
-					.authorities("ROLE_CLIENT")
-					.scopes("read").resourceIds("gift")
+                                               .authorities("ROLE_CLIENT")
+                                               .scopes("read")
+                                               .resourceIds("gift")
 					.accessTokenValiditySeconds(3600).and().build();
 
-			// Create a series of hard-coded users.
-			UserDetailsService svc = new InMemoryUserDetailsManager(
-					Arrays.asList(
-							User.create("admin", "pass", "ADMIN", "USER"),
-							User.create("user0", "pass", "USER"),
-							User.create("user1", "pass", "USER"),
-							User.create("user2", "pass", "USER"),
-							User.create("user3", "pass", "USER"),
-							User.create("user4", "pass", "USER"),
-							User.create("user5", "pass", "USER")));
+            JdbcUserDetailsManager udm = new JdbcUserDetailsManager();
+            udm.setDataSource(Application.dataSource());
+			UserDetailsService svc = udm;
+//					Arrays.asList(
+//							User.create("admin", "pass", "ADMIN", "USER"),
+//							User.create("user0", "pass", "USER"),
+//							User.create("user1", "pass", "USER"),
+//							User.create("user2", "pass", "USER"),
+//							User.create("user3", "pass", "USER"),
+//							User.create("user4", "pass", "USER"),
+//							User.create("user5", "pass", "USER")));
 
 			// Since clients have to use BASIC authentication with the client's id/secret,
 			// when sending a request for a password grant, we make each client a user
@@ -209,8 +200,7 @@ public class OAuth2SecurityConfiguration {
 		 * to process authentication requests.
 		 */
 		@Override
-		public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-				throws Exception {
+		public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
 			endpoints.authenticationManager(authenticationManager);
 		}
 
