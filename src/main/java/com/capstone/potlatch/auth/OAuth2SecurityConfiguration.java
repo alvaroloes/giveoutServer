@@ -77,9 +77,12 @@ public class OAuth2SecurityConfiguration {
 
         @Override
         public void configure(WebSecurity web) throws Exception {
-            web.ignoring().antMatchers(HttpMethod.GET,
-                    Routes.GIFTS_PATH
-            );
+            web.ignoring()
+                .antMatchers(HttpMethod.GET,
+                        Routes.GIFTS_PATH
+                ).antMatchers(HttpMethod.POST,
+                        Routes.USERS_PATH
+                );
         }
     }
 
@@ -162,6 +165,20 @@ public class OAuth2SecurityConfiguration {
             JdbcUserDetailsManager udm = new JdbcUserDetailsManager();
             udm.setDataSource(Application.dataSource());
 			UserDetailsService svc = udm;
+
+            // Remember to have this in the database:
+            /*
+            create table users(
+                    username varchar(50) not null primary key,
+                    password varchar(50) not null,
+                    enabled boolean not null);
+
+            create table authorities (
+                    username varchar(50) not null,
+                    authority varchar(50) not null,
+                    constraint fk_authorities_users foreign key(username) references users(username));
+            create unique index ix_auth_username on authorities (username,authority);
+            */
 //					Arrays.asList(
 //							User.create("admin", "pass", "ADMIN", "USER"),
 //							User.create("user0", "pass", "USER"),

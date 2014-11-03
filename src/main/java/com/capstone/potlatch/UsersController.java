@@ -18,52 +18,40 @@
 
 package com.capstone.potlatch;
 
-import com.capstone.potlatch.models.User;
-import com.google.common.collect.Lists;
 import com.capstone.potlatch.models.Gift;
-import com.capstone.potlatch.models.GiftRepository;
+import com.capstone.potlatch.models.User;
+import com.capstone.potlatch.models.UserRepository;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.Collection;
 
 @Controller
-public class GiftsController {
+public class UsersController {
 
 	@Autowired
-	private GiftRepository gifts;
+	private UserRepository users;
 
-	@RequestMapping(value = Routes.GIFTS_PATH, method=RequestMethod.GET)
-    public @ResponseBody Collection<Gift> list(
-           @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title)
-    {
-        if (title == null) {
-            return Lists.newArrayList(gifts.findAll());
-        } else {
-            return Lists.newArrayList(gifts.findByTitle(title));
-        }
+    @PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.CURRENT_USER_PATH, method=RequestMethod.GET)
+    public @ResponseBody User getCurrent(Principal p) {
+        return users.findByUsername(p.getName());
     }
 
-	@PreAuthorize("hasRole(mobile)")
-	@RequestMapping(value = Routes.GIFTS_PATH, method = RequestMethod.POST)
-	public @ResponseBody Gift create(
-           @RequestBody Gift gift,
-           Principal p)
+	@RequestMapping(value = Routes.USERS_PATH, method = RequestMethod.POST)
+	public @ResponseBody User create(@RequestBody User user)
     {
-//        User u = new User();
-//        u.setUsername(p.getName());
-//        gift.setUser(u);
-		gifts.save(gift);
-		return gift;
+		users.save(user);
+		return user;
 	}
 //
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}", method = RequestMethod.GET)
 //	public @ResponseBody Video getVideo(@PathVariable("id") long id){
-//    	Video v = gifts.findOne(id);
+//    	Video v = users.findOne(id);
 //
 //    	if( v == null) {
 //    		throw new ResourceNotFoundException("Not found");
@@ -75,7 +63,7 @@ public class GiftsController {
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}/like", method = RequestMethod.POST)
 //	public void like(@PathVariable("id") long id, Principal p, HttpServletResponse response) {
-//    	Video v = gifts.findOne(id);
+//    	Video v = users.findOne(id);
 //
 //    	if( v == null) {
 //    		response.setStatus(404);
@@ -91,13 +79,13 @@ public class GiftsController {
 //
 //    	likedBy.add(username);
 //    	v.setLikes(v.getLikes() + 1);
-//    	gifts.save(v);
+//    	users.save(v);
 //	}
 //
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}/unlike", method = RequestMethod.POST)
 //	public void unlike(@PathVariable("id") long id, Principal p, HttpServletResponse response) {
-//    	Video v = gifts.findOne(id);
+//    	Video v = users.findOne(id);
 //
 //    	if( v == null) {
 //    		response.setStatus(404);
@@ -113,14 +101,14 @@ public class GiftsController {
 //
 //    	likedBy.remove(username);
 //    	v.setLikes(v.getLikes() - 1);
-//    	gifts.save(v);
+//    	users.save(v);
 //	}
 //
 //
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_SVC_PATH + "/{id}/likedby", method = RequestMethod.GET)
 //	public @ResponseBody Collection<String> likedBy(@PathVariable("id") long id){
-//    	Video v = gifts.findOne(id);
+//    	Video v = users.findOne(id);
 //
 //    	if( v == null) {
 //    		throw new ResourceNotFoundException("Not found");
@@ -132,13 +120,13 @@ public class GiftsController {
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_TITLE_SEARCH_PATH, method = RequestMethod.GET)
 //	public @ResponseBody Collection<Video> findByTitle(@RequestParam(VideoSvcApi.TITLE_PARAMETER) String title){
-//		return gifts.findByName(title);
+//		return users.findByName(title);
 //	}
 //
 //	@PreAuthorize("hasRole(mobile)")
 //	@RequestMapping(value = VideoSvcApi.VIDEO_DURATION_SEARCH_PATH, method = RequestMethod.GET)
 //	public @ResponseBody Collection<Video> findByDuration(@RequestParam(VideoSvcApi.DURATION_PARAMETER) long duration){
-//		return gifts.findByDurationLessThan(duration);
+//		return users.findByDurationLessThan(duration);
 //	}
 
 //    @RequestMapping(value = "/test", method = RequestMethod.GET)
