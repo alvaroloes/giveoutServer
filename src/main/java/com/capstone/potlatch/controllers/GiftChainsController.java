@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.List;
 
@@ -41,11 +42,8 @@ public class GiftChainsController {
 	private GiftRepository gifts;
 
 	@RequestMapping(value = Routes.GIFTS_CHAIN_PATH, method=RequestMethod.GET)
-    public @ResponseBody Collection<GiftChain> list() {
+    public @ResponseBody Collection<GiftChain> list(HttpServletResponse response) {
         List<GiftChain> giftChainList = Lists.newArrayList(giftChains.findAll());
-//        for (GiftChain giftChain : giftChainList) {
-//            giftChain.setGifts(Lists.newArrayList(gifts.findOne(18L)));
-//        }
         return giftChainList;
     }
 }

@@ -1,7 +1,9 @@
 package com.capstone.potlatch.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -23,8 +25,8 @@ import java.util.Set;
  */
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
+//@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Gift {
-
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
@@ -39,7 +41,7 @@ public class Gift {
 
     @ManyToOne(optional=false)
     private User user;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private GiftChain giftChain;
 
 	public Gift() {}
@@ -100,11 +102,27 @@ public class Gift {
         this.user = user;
     }
 
+    @JsonIgnore // Ignore property when serializing
     public GiftChain getGiftChain() {
         return giftChain;
     }
 
+    @JsonProperty // Include property when deserializing
     public void setGiftChain(GiftChain giftChain) {
         this.giftChain = giftChain;
+    }
+
+    public Long getGiftChainId() {
+        if (giftChain != null) {
+            return giftChain.getId();
+        }
+        return null;
+    }
+
+    public String getGiftChainName() {
+        if (giftChain != null) {
+            return giftChain.getName();
+        }
+        return null;
     }
 }

@@ -1,11 +1,16 @@
 package com.capstone.potlatch.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.util.List;
 
 
 @Entity
-//@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class GiftChain {
 
 	@Id
@@ -13,8 +18,7 @@ public class GiftChain {
 	private long id;
     private String name;
 
-    @OneToMany(mappedBy="giftChain")
-    @Transient
+    @OneToMany(mappedBy="giftChain", fetch = FetchType.EAGER)
     private List<Gift> gifts;
 
     public GiftChain() {}

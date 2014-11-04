@@ -22,6 +22,7 @@ public class User {
     private boolean enabled = true; //This should be default to true
 
     @OneToMany(mappedBy="user")
+    @JsonIgnore
     private List<Gift> gifts;
 
     public User() {}
@@ -42,12 +43,10 @@ public class User {
         this.username = username;
     }
 
-    @JsonIgnore
     public List<Gift> getGifts() {
         return gifts;
     }
 
-    @JsonIgnore
     public void setGifts(List<Gift> gifts) {
         this.gifts = gifts;
     }
