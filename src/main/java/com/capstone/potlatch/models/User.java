@@ -1,5 +1,6 @@
 package com.capstone.potlatch.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
@@ -41,10 +42,12 @@ public class User {
         this.username = username;
     }
 
+    @JsonIgnore
     public List<Gift> getGifts() {
         return gifts;
     }
 
+    @JsonIgnore
     public void setGifts(List<Gift> gifts) {
         this.gifts = gifts;
     }

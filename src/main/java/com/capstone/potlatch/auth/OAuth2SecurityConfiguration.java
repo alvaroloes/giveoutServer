@@ -76,7 +76,8 @@ public class OAuth2SecurityConfiguration {
         public void configure(WebSecurity web) throws Exception {
             web.ignoring()
                 .antMatchers(HttpMethod.GET,
-                        Routes.GIFTS_PATH
+                        Routes.GIFTS_PATH,
+                        Routes.GIFTS_CHAIN_PATH
                 ).antMatchers(HttpMethod.POST,
                     Routes.USERS_PATH
             );
@@ -175,12 +176,6 @@ public class OAuth2SecurityConfiguration {
                     constraint fk_authorities_users foreign key(username) references users(username));
             create unique index ix_auth_username on authorities (username,authority);
             */
-
-			// Since clients have to use BASIC authentication with the client's id/secret,
-			// when sending a request for a password grant, we make each client a user
-			// as well. When the BASIC authentication information is pulled from the
-			// request, this combined UserDetailsService will authenticate that the
-			// client is a valid "user".
 			combinedService_ = new ClientAndUserDetailsService(csvc, userDetailsManager);
 		}
 

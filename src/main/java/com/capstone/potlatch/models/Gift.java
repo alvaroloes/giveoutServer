@@ -1,10 +1,11 @@
 package com.capstone.potlatch.models;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A simple object to represent a video and its URL for viewing.
@@ -21,6 +22,7 @@ import javax.persistence.*;
  * @author mitchell
  */
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Gift {
 
 	@Id
@@ -35,11 +37,10 @@ public class Gift {
 	@ElementCollection
 	private Set<Long> markedInappropriateByUserIds = new HashSet<Long>();
 
-    @ManyToOne(optional=true)
-//    @ManyToOne(optional=false)
+    @ManyToOne(optional=false)
     private User user;
-    @ManyToMany
-    private List<GiftChain> giftChains;
+    @ManyToOne
+    private GiftChain giftChain;
 
 	public Gift() {}
 
@@ -99,11 +100,11 @@ public class Gift {
         this.user = user;
     }
 
-    public List<GiftChain> getGiftChains() {
-        return giftChains;
+    public GiftChain getGiftChain() {
+        return giftChain;
     }
 
-    public void setGiftChains(List<GiftChain> giftChains) {
-        this.giftChains = giftChains;
+    public void setGiftChain(GiftChain giftChain) {
+        this.giftChain = giftChain;
     }
 }

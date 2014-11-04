@@ -1,11 +1,11 @@
 package com.capstone.potlatch.models;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.List;
 
 
 @Entity
+//@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GiftChain {
 
 	@Id
@@ -13,7 +13,8 @@ public class GiftChain {
 	private long id;
     private String name;
 
-    @ManyToMany(mappedBy="giftChains")
+    @OneToMany(mappedBy="giftChain")
+    @Transient
     private List<Gift> gifts;
 
     public GiftChain() {}
@@ -41,4 +42,6 @@ public class GiftChain {
     public void setGifts(List<Gift> gifts) {
         this.gifts = gifts;
     }
+
+
 }
