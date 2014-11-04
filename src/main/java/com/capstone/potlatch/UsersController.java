@@ -18,14 +18,17 @@
 
 package com.capstone.potlatch;
 
-import com.capstone.potlatch.models.Gift;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.models.UserRepository;
-import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 
@@ -34,6 +37,8 @@ public class UsersController {
 
 	@Autowired
 	private UserRepository users;
+    @Autowired
+    private UserDetailsManager userDetailsManager;
 
     @PreAuthorize("hasRole(mobile)")
 	@RequestMapping(value = Routes.CURRENT_USER_PATH, method=RequestMethod.GET)
@@ -44,8 +49,11 @@ public class UsersController {
 	@RequestMapping(value = Routes.USERS_PATH, method = RequestMethod.POST)
 	public @ResponseBody User create(@RequestBody User user)
     {
-		users.save(user);
-		return user;
+//        ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder();
+//        String encodedPassword = passwordEncoder.encodePassword(user.getPassword(), null);
+        UserDetails u = com.capstone.potlatch.auth.User.create(user.getUsername(), user.getPassword(), "USER");
+        userDetailsManager.createUser(u);
+		return users.findByUsername(user.getUsername());
 	}
 //
 //	@PreAuthorize("hasRole(mobile)")

@@ -1,12 +1,9 @@
 package com.capstone.potlatch.auth;
 
-import java.io.File;
-import java.util.Arrays;
-
 import com.capstone.potlatch.Application;
+import com.capstone.potlatch.Routes;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
-import com.capstone.potlatch.Routes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
@@ -26,7 +23,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.builders.InMemoryClientDetailsServiceBuilder;
-import org.springframework.security.oauth2.config.annotation.builders.JdbcClientDetailsServiceBuilder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -34,9 +30,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
+import org.springframework.security.provisioning.UserDetailsManager;
+
+import java.io.File;
 
 /**
 *	Configure this web application to use OAuth 2.0.
@@ -81,9 +78,11 @@ public class OAuth2SecurityConfiguration {
                 .antMatchers(HttpMethod.GET,
                         Routes.GIFTS_PATH
                 ).antMatchers(HttpMethod.POST,
-                        Routes.USERS_PATH
-                );
+                    Routes.USERS_PATH
+            );
         }
+
+
     }
 
 	/**
@@ -133,6 +132,8 @@ public class OAuth2SecurityConfiguration {
 		// A data structure used to store both a ClientDetailsService and a UserDetailsService
 		private ClientAndUserDetailsService combinedService_;
 
+        private UserDetailsManager userDetailsManager;
+
 		/**
 		 *
 		 * This constructor is used to setup the clients and users that will be able to login to the
@@ -162,38 +163,25 @@ public class OAuth2SecurityConfiguration {
                                                .resourceIds("gift")
 					.accessTokenValiditySeconds(3600).and().build();
 
-            JdbcUserDetailsManager udm = new JdbcUserDetailsManager();
-            udm.setDataSource(Application.dataSource());
-			UserDetailsService svc = udm;
+            JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
+            jdbcUserDetailsManager.setDataSource(Application.dataSource());
+            userDetailsManager = jdbcUserDetailsManager;
 
             // Remember to have this in the database:
             /*
-            create table users(
-                    username varchar(50) not null primary key,
-                    password varchar(50) not null,
-                    enabled boolean not null);
-
             create table authorities (
                     username varchar(50) not null,
                     authority varchar(50) not null,
                     constraint fk_authorities_users foreign key(username) references users(username));
             create unique index ix_auth_username on authorities (username,authority);
             */
-//					Arrays.asList(
-//							User.create("admin", "pass", "ADMIN", "USER"),
-//							User.create("user0", "pass", "USER"),
-//							User.create("user1", "pass", "USER"),
-//							User.create("user2", "pass", "USER"),
-//							User.create("user3", "pass", "USER"),
-//							User.create("user4", "pass", "USER"),
-//							User.create("user5", "pass", "USER")));
 
 			// Since clients have to use BASIC authentication with the client's id/secret,
 			// when sending a request for a password grant, we make each client a user
 			// as well. When the BASIC authentication information is pulled from the
 			// request, this combined UserDetailsService will authenticate that the
 			// client is a valid "user".
-			combinedService_ = new ClientAndUserDetailsService(csvc, svc);
+			combinedService_ = new ClientAndUserDetailsService(csvc, userDetailsManager);
 		}
 
 		/**
@@ -205,11 +193,12 @@ public class OAuth2SecurityConfiguration {
 		}
 
 		/**
-		 * Return all of our user information to anyone in the framework who requests it.
+		 * Return an instance of the user management to anyone in the framework who requests it.
+         * Usefull to create users
 		 */
 		@Bean
-		public UserDetailsService userDetailsService() {
-			return combinedService_;
+		public UserDetailsManager userDetailsManager() {
+			return userDetailsManager;
 		}
 
 		/**
@@ -226,12 +215,10 @@ public class OAuth2SecurityConfiguration {
 		 * authenticate clients with.
 		 */
 		@Override
-		public void configure(ClientDetailsServiceConfigurer clients)
-				throws Exception {
+		public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 			clients.withClientDetails(clientDetailsService());
 		}
-
-	}
+    }
 
 
     // This version uses the Tomcat web container and configures it to
