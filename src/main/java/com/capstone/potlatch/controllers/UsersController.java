@@ -22,7 +22,9 @@ import com.capstone.potlatch.Constants;
 import com.capstone.potlatch.Routes;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.models.UserRepository;
+import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
@@ -60,8 +62,7 @@ public class UsersController {
     public @ResponseBody Collection<User> getTop(
            @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
            @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit) {
-//        PageRequest pageRequest = new PageRequest(page, limit);
-//        return Lists.newArrayList( users.aQuery());
-        return null;
+        PageRequest pageRequest = new PageRequest(page, limit);
+        return Lists.newArrayList(users.getUsersOrderedByNumberOfGifts(pageRequest));
     }
 }

@@ -18,14 +18,26 @@ public class User {
 	private long id;
     private String username;
     private transient String password;
-
     private boolean enabled = true; //This should be default to true
 
     @OneToMany(mappedBy="user")
     @JsonIgnore
     private List<Gift> gifts;
 
+    @Transient
+    private Long giftCount;
+
     public User() {}
+
+    // This constructor is used in a Jpa query
+    public User(User u, long giftCount) {
+        this.id = u.id;
+        this.username = u.username;
+        this.enabled = u.enabled;
+        this.gifts = u.gifts;
+        this.giftCount = giftCount;
+    }
+
 
     public long getId() {
         return id;
@@ -59,7 +71,11 @@ public class User {
         return password;
     }
 
-    public int getGiftCount() {
-        return gifts.size();
+    public Long getGiftCount() {
+        return giftCount;
+    }
+
+    public void setGiftCount(long giftCount) {
+        this.giftCount = giftCount;
     }
 }
