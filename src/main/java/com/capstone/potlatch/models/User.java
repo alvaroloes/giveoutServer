@@ -58,4 +58,8 @@ public class User {
     public String getPassword() {
         return password;
     }
+
+    public int getGiftCount() {
+        return gifts.size();
+    }
 }

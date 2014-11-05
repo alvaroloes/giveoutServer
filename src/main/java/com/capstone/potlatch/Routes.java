@@ -4,8 +4,11 @@ package com.capstone.potlatch;
  * Created by alvaro on 2/11/14.
  */
 public interface Routes {
-    public static final String GIFTS_PATH = "/gifts";
     public static final String TITLE_PARAMETER = "title";
+    public static final String PAGE_PARAMETER = "page";
+    public static final String LIMIT_PARAMETER = "limit";
+
+    public static final String GIFTS_PATH = "/gifts";
 
     public static final String GIFTS_CHAIN_PATH = GIFTS_PATH + "/chains";
 

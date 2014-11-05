@@ -18,6 +18,7 @@
 
 package com.capstone.potlatch.controllers;
 
+import com.capstone.potlatch.Constants;
 import com.capstone.potlatch.Routes;
 import com.capstone.potlatch.models.User;
 import com.capstone.potlatch.models.UserRepository;
@@ -26,12 +27,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Collection;
 
 @Controller
 public class UsersController {
@@ -56,4 +55,13 @@ public class UsersController {
         userDetailsManager.createUser(u);
 		return users.findByUsername(user.getUsername());
 	}
+
+    @RequestMapping(value = Routes.TOP_GIVERS_PATH, method=RequestMethod.GET)
+    public @ResponseBody Collection<User> getTop(
+           @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
+           @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit) {
+//        PageRequest pageRequest = new PageRequest(page, limit);
+//        return Lists.newArrayList( users.aQuery());
+        return null;
+    }
 }

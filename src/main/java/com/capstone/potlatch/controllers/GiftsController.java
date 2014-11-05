@@ -18,10 +18,12 @@
 
 package com.capstone.potlatch.controllers;
 
+import com.capstone.potlatch.Constants;
 import com.capstone.potlatch.Routes;
 import com.capstone.potlatch.models.*;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -41,12 +43,15 @@ public class GiftsController {
 
 	@RequestMapping(value = Routes.GIFTS_PATH, method=RequestMethod.GET)
     public @ResponseBody Collection<Gift> list(
-           @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title)
+           @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title,
+           @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
+           @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit)
     {
+        PageRequest pageRequest = new PageRequest(page, limit);
         if (title == null) {
-            return Lists.newArrayList(gifts.findAll());
+            return Lists.newArrayList(gifts.findAll(pageRequest));
         } else {
-            return Lists.newArrayList(gifts.findByTitle(title));
+            return Lists.newArrayList(gifts.findByTitleLike("%"+title+"%", pageRequest));
         }
     }
 

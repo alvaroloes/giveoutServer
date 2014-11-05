@@ -18,20 +18,21 @@
 
 package com.capstone.potlatch.controllers;
 
+import com.capstone.potlatch.Constants;
 import com.capstone.potlatch.Routes;
 import com.capstone.potlatch.models.GiftChain;
 import com.capstone.potlatch.models.GiftChainRepository;
 import com.capstone.potlatch.models.GiftRepository;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
-import java.util.List;
 
 @Controller
 public class GiftChainsController {
@@ -42,8 +43,10 @@ public class GiftChainsController {
 	private GiftRepository gifts;
 
 	@RequestMapping(value = Routes.GIFTS_CHAIN_PATH, method=RequestMethod.GET)
-    public @ResponseBody Collection<GiftChain> list(HttpServletResponse response) {
-        List<GiftChain> giftChainList = Lists.newArrayList(giftChains.findAll());
-        return giftChainList;
+    public @ResponseBody Collection<GiftChain> list(
+           @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
+           @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit) {
+        PageRequest pageRequest = new PageRequest(page, limit);
+        return Lists.newArrayList(giftChains.findAll(pageRequest));
     }
 }
