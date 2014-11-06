@@ -39,7 +39,7 @@ public class Gift {
 	@ElementCollection
 	private Set<Long> markedInappropriateByUserIds = new HashSet<Long>();
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=false, fetch = FetchType.EAGER)
     private User user;
     @ManyToOne(fetch = FetchType.EAGER)
     private GiftChain giftChain;

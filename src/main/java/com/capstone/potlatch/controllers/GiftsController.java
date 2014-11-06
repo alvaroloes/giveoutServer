@@ -82,7 +82,7 @@ public class GiftsController {
 	@RequestMapping(value = Routes.GIFTS_TOUCH_PATH, method = RequestMethod.PUT)
 	public @ResponseBody Gift touchOrUntouch(
            @PathVariable("id") long id,
-           @RequestParam(value = Routes.UNTOUCH_PARAMETER, required = false, defaultValue = "false") boolean untouch,
+           @RequestParam(value = Routes.REGRET_PARAMETER, required = false, defaultValue = "false") boolean regret,
            Principal p,
            HttpServletResponse response)
     {
@@ -96,10 +96,38 @@ public class GiftsController {
         Set<Long> touchedBy = gift.getTouchedByUserIds();
 
         // Touching or untouching more than once will have no effect.
-        if (untouch) {
+        if (regret) {
             touchedBy.remove(userId);
         } else {
             touchedBy.add(userId);
+        }
+
+        gifts.save(gift);
+		return gift;
+	}
+
+	@PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.GIFTS_INAPPROPRIATE_PATH, method = RequestMethod.PUT)
+	public @ResponseBody Gift markOrUnmarkAsInappropiate(
+           @PathVariable("id") long id,
+           @RequestParam(value = Routes.REGRET_PARAMETER, required = false, defaultValue = "false") boolean regret,
+           Principal p,
+           HttpServletResponse response)
+    {
+        Gift gift = gifts.findOne(id);
+        if( gift == null) {
+            response.setStatus(404);
+            return null;
+        }
+
+        long userId = users.findByUsername(p.getName()).getId();
+        Set<Long> markedAsInappropriateBy = gift.getMarkedInappropriateByUserIds();
+
+        // Mark or unmark as inappropriate more than once will have no effect.
+        if (regret) {
+            markedAsInappropriateBy.remove(userId);
+        } else {
+            markedAsInappropriateBy.add(userId);
         }
 
         gifts.save(gift);

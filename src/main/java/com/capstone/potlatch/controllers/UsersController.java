@@ -64,11 +64,11 @@ public class UsersController {
            @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
            @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit) {
         PageRequest pageRequest = new PageRequest(page, limit);
-//        HACER EL touch/mark as inappropiate gift.
-        if (kind == Constants.TOP_KIND_GIFT_COUNT) {
+
+        if (Constants.TOP_KIND_GIFT_COUNT.equals(kind)) {
             return Lists.newArrayList(users.getUsersOrderedByNumberOfGiftsDesc(pageRequest));
         } else {
-            return null;
+            return Lists.newArrayList(users.getUsersOrderedByNumberOfTouchesDesc(pageRequest));
         }
     }
 }
