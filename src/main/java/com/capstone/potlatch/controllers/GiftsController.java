@@ -57,6 +57,24 @@ public class GiftsController {
         }
     }
 
+    @PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.MY_GIFTS_PATH, method=RequestMethod.GET)
+    public @ResponseBody Collection<Gift> listMine(
+           @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title,
+           @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
+           @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit,
+           Principal p)
+    {
+        User u = users.findByUsername(p.getName());
+        PageRequest pageRequest = new PageRequest(page, limit);
+
+        if (title == null) {
+            return Lists.newArrayList(gifts.findByUserId(u.getId(),pageRequest));
+        } else {
+            return Lists.newArrayList(gifts.findByUserIdAndTitleLike(u.getId(),"%"+title+"%", pageRequest));
+        }
+    }
+
 	@PreAuthorize("hasRole(mobile)")
 	@RequestMapping(value = Routes.GIFTS_PATH, method = RequestMethod.POST)
 	public @ResponseBody Gift create(

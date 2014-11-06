@@ -11,6 +11,7 @@ public interface Routes {
     public static final String REGRET_PARAMETER = "regret";
 
     public static final String GIFTS_PATH = "/gifts";
+    public static final String MY_GIFTS_PATH = GIFTS_PATH + "/mine";
     public static final String GIFTS_TOUCH_PATH = GIFTS_PATH + "/{id}/touch";
     public static final String GIFTS_INAPPROPRIATE_PATH = GIFTS_PATH + "/{id}/inappropriate";
 

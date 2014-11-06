@@ -51,8 +51,9 @@ public class UsersController {
 	@RequestMapping(value = Routes.USERS_PATH, method = RequestMethod.POST)
 	public @ResponseBody User create(@RequestBody User user)
     {
-//        ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder();
-//        String encodedPassword = passwordEncoder.encodePassword(user.getPassword(), null);
+        //TODO: encript passwords
+        //ShaPasswordEncoder passwordEncoder = new ShaPasswordEncoder();
+        //String encodedPassword = passwordEncoder.encodePassword(user.getPassword(), null);
         UserDetails u = com.capstone.potlatch.auth.User.create(user.getUsername(), user.getPassword(), "USER");
         userDetailsManager.createUser(u);
 		return users.findByUsername(user.getUsername());
