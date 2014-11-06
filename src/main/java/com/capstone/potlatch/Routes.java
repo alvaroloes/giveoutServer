@@ -7,8 +7,11 @@ public interface Routes {
     public static final String TITLE_PARAMETER = "title";
     public static final String PAGE_PARAMETER = "page";
     public static final String LIMIT_PARAMETER = "limit";
+    public static final String TOP_KIND_PARAMETER = "kind";
+    public static final String UNTOUCH_PARAMETER = "untouch";
 
     public static final String GIFTS_PATH = "/gifts";
+    public static final String GIFTS_TOUCH_PATH = GIFTS_PATH + "/{id}/touch";
 
     public static final String GIFTS_CHAIN_PATH = GIFTS_PATH + "/chains";
 

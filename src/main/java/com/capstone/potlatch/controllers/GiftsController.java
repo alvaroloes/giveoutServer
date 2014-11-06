@@ -28,8 +28,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Set;
 
 @Controller
 public class GiftsController {
@@ -73,6 +75,34 @@ public class GiftsController {
         }
 
 		gifts.save(gift);
+		return gift;
+	}
+
+	@PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.GIFTS_TOUCH_PATH, method = RequestMethod.PUT)
+	public @ResponseBody Gift touchOrUntouch(
+           @PathVariable("id") long id,
+           @RequestParam(value = Routes.UNTOUCH_PARAMETER, required = false, defaultValue = "false") boolean untouch,
+           Principal p,
+           HttpServletResponse response)
+    {
+        Gift gift = gifts.findOne(id);
+        if( gift == null) {
+            response.setStatus(404);
+            return null;
+        }
+
+        long userId = users.findByUsername(p.getName()).getId();
+        Set<Long> touchedBy = gift.getTouchedByUserIds();
+
+        // Touching or untouching more than once will have no effect.
+        if (untouch) {
+            touchedBy.remove(userId);
+        } else {
+            touchedBy.add(userId);
+        }
+
+        gifts.save(gift);
 		return gift;
 	}
 }
