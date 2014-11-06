@@ -41,7 +41,7 @@ public class Gift {
 
     @ManyToOne(optional=false, fetch = FetchType.EAGER)
     private User user;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = true)
     private GiftChain giftChain;
 
 	public Gift() {}
@@ -112,6 +112,8 @@ public class Gift {
         this.giftChain = giftChain;
     }
 
+    // Only read only properties. I created them to avoid a cycle when serializing the GiftChain gifts
+    // (Which have a GiftChain reference...)
     public Long getGiftChainId() {
         if (giftChain != null) {
             return giftChain.getId();

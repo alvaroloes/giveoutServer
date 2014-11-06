@@ -69,9 +69,9 @@ public class GiftsController {
         PageRequest pageRequest = new PageRequest(page, limit);
 
         if (title == null) {
-            return Lists.newArrayList(gifts.findByUserId(u.getId(),pageRequest));
+            return Lists.newArrayList(gifts.findByUserId(u.getId(), pageRequest));
         } else {
-            return Lists.newArrayList(gifts.findByUserIdAndTitleLike(u.getId(),"%"+title+"%", pageRequest));
+            return Lists.newArrayList(gifts.findByUserIdAndTitleLike(u.getId(), "%" + title + "%", pageRequest));
         }
     }
 
@@ -93,6 +93,46 @@ public class GiftsController {
         }
 
 		gifts.save(gift);
+		return gift;
+	}
+
+	@PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.GIFTS_ID_PATH, method = RequestMethod.PUT)
+	public @ResponseBody Gift update(
+           @PathVariable("id") long id,
+           @RequestBody Gift gift,
+           Principal p,
+           HttpServletResponse response)
+    {
+        Gift oldGift = gifts.findOne(id);
+        if( gift == null) {
+            response.setStatus(404);
+            return null;
+        }
+
+        User currentUser = users.findByUsername(p.getName());
+        if (oldGift.getUser().getId() != currentUser.getId()) {
+            response.setStatus(401);
+            return null;
+        }
+
+        gift.setUser(currentUser);
+        gift.setId(id);
+
+        GiftChain giftChain = gift.getGiftChain();
+        if (giftChain != null) {
+            if (giftChain.getId() <= 0) {
+                giftChains.save(giftChain);
+            }
+            gift.setGiftChain(giftChains.findOne(giftChain.getId()));
+        }
+
+		gifts.save(gift);
+
+        //TODO: Check here if oldGift.giftChain() is empty and delete it
+        if (oldGift.getGiftChain().getGifts().size() == 0) {
+
+        }
 		return gift;
 	}
 
