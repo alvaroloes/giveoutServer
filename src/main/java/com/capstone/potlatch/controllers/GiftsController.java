@@ -24,11 +24,13 @@ import com.capstone.potlatch.models.*;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
@@ -102,17 +104,18 @@ public class GiftsController {
            @PathVariable("id") long id,
            @RequestBody Gift gift,
            Principal p,
-           HttpServletResponse response)
-    {
+           HttpServletResponse response) throws IOException {
         Gift oldGift = gifts.findOne(id);
-        if( gift == null) {
-            response.setStatus(404);
+        if( oldGift == null) {
+            response.sendError(HttpStatus.NOT_FOUND.value());
             return null;
         }
 
+        GiftChain oldGiftChain = oldGift.getGiftChain();
+
         User currentUser = users.findByUsername(p.getName());
         if (oldGift.getUser().getId() != currentUser.getId()) {
-            response.setStatus(401);
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "You are not the owner of this gift");
             return null;
         }
 
@@ -121,18 +124,30 @@ public class GiftsController {
 
         GiftChain giftChain = gift.getGiftChain();
         if (giftChain != null) {
+            // The gift chain provided needs to be created?
             if (giftChain.getId() <= 0) {
                 giftChains.save(giftChain);
             }
-            gift.setGiftChain(giftChains.findOne(giftChain.getId()));
+            else {
+                GiftChain exisingGiftChain = giftChains.findOne(giftChain.getId());
+                if (exisingGiftChain == null) {
+                    response.sendError(HttpStatus.NOT_FOUND.value(), "The Gift chain provided does not exists");
+                    return null;
+                }
+
+                gift.setGiftChain(exisingGiftChain);
+            }
+
         }
 
 		gifts.save(gift);
 
-        //TODO: Check here if oldGift.giftChain() is empty and delete it
-        if (oldGift.getGiftChain().getGifts().size() == 0) {
+        long giftsRemaining = gifts.countByGiftChain(oldGiftChain);
 
+        if (giftsRemaining == 0) {
+            giftChains.delete(oldGiftChain.getId());
         }
+
 		return gift;
 	}
 

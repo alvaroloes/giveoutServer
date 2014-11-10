@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GiftRepository extends PagingAndSortingRepository<Gift, Long> {
-	public Page<Gift> findByTitleLike(String title, Pageable pageable);
-	public Page<Gift> findByUserId(long userId, Pageable pageable);
-	public Page<Gift> findByUserIdAndTitleLike(long userId, String title, Pageable pageable);
+	Page<Gift> findByTitleLike(String title, Pageable pageable);
+	Page<Gift> findByUserId(long userId, Pageable pageable);
+	Page<Gift> findByUserIdAndTitleLike(long userId, String title, Pageable pageable);
+    long countByGiftChain(GiftChain giftChain);
 }
