@@ -145,11 +145,40 @@ public class GiftsController {
         long giftsRemaining = gifts.countByGiftChain(oldGiftChain);
 
         if (giftsRemaining == 0) {
-            giftChains.delete(oldGiftChain.getId());
+            giftChains.delete(oldGiftChain);
         }
 
 		return gift;
 	}
+
+
+    @PreAuthorize("hasRole(mobile)")
+    @RequestMapping(value = Routes.GIFTS_ID_PATH, method = RequestMethod.DELETE)
+    public @ResponseBody void delete(
+            @PathVariable("id") long id,
+            Principal p,
+            HttpServletResponse response) throws IOException {
+
+        Gift gift = gifts.findOne(id);
+        if( gift == null) {
+            response.sendError(HttpStatus.NOT_FOUND.value());
+            return;
+        }
+
+        User currentUser = users.findByUsername(p.getName());
+        if (gift.getUser().getId() != currentUser.getId()) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "You are not the owner of this gift");
+            return;
+        }
+
+        gifts.delete(gift);
+
+        long giftsRemaining = gifts.countByGiftChain(gift.getGiftChain());
+
+        if (giftsRemaining == 0) {
+            giftChains.delete(gift.getGiftChain());
+        }
+    }
 
 	@PreAuthorize("hasRole(mobile)")
 	@RequestMapping(value = Routes.GIFTS_TOUCH_PATH, method = RequestMethod.PUT)
