@@ -53,9 +53,9 @@ public class GiftsController {
     {
         PageRequest pageRequest = new PageRequest(page, limit);
         if (title == null) {
-            return Lists.newArrayList(gifts.findAll(pageRequest));
+            return Lists.newArrayList(gifts.findByGiftChainIsNotNull(pageRequest));
         } else {
-            return Lists.newArrayList(gifts.findByTitleLike("%"+title+"%", pageRequest));
+            return Lists.newArrayList(gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest));
         }
     }
 
