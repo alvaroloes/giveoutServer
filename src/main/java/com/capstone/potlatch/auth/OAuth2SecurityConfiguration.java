@@ -152,18 +152,12 @@ public class OAuth2SecurityConfiguration {
 			ClientDetailsService csvc = new InMemoryClientDetailsServiceBuilder()
 					// Create a client that has "read" and "write" access to the
 			        // gift service
-					.withClient("mobile").authorizedGrantTypes("password")
+					.withClient("mobile").authorizedGrantTypes("password", "refresh_token")
                                          .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT")
                                          .scopes("read","write")
                                          .resourceIds("gift")
-					.and()
-					// Create a second client that only has "read" access to the
-					// gift service
-					.withClient("mobileReader").authorizedGrantTypes("password")
-                                               .authorities("ROLE_CLIENT")
-                                               .scopes("read")
-                                               .resourceIds("gift")
-					.accessTokenValiditySeconds(3600).and().build();
+					.and().build();
+
 
             JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager();
             jdbcUserDetailsManager.setDataSource(Application.dataSource());
