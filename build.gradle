@@ -55,6 +55,8 @@ dependencies {
     compile("org.apache.commons:commons-lang3:3.3.2")
     compile("com.squareup.retrofit:retrofit:1.6.0")
     compile("commons-io:commons-io:2.4")
+    compile('org.imgscalr:imgscalr-lib:4.2')
+
 
 }
 

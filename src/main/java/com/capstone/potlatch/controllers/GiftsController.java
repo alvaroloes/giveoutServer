@@ -21,15 +21,21 @@ package com.capstone.potlatch.controllers;
 import com.capstone.potlatch.Constants;
 import com.capstone.potlatch.Routes;
 import com.capstone.potlatch.models.*;
+import com.capstone.potlatch.util.GiftImageFileManager;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
@@ -80,9 +86,14 @@ public class GiftsController {
 	@PreAuthorize("hasRole(mobile)")
 	@RequestMapping(value = Routes.GIFTS_PATH, method = RequestMethod.POST)
 	public @ResponseBody Gift create(
-           @RequestBody Gift gift,
-           Principal p)
-    {
+           @RequestParam("gift") String giftString,
+           @RequestParam MultipartFile image,
+           Principal p) throws IOException {
+        // In order to send in one request the gift data and the image, the gift data must be
+        // sent as a json string encoded along with the image.
+        // Here we parse it into a Gift object.
+        Gift gift = new ObjectMapper().readValue(UriEncoder.decode(giftString), Gift.class);
+
         User u = users.findByUsername(p.getName());
         gift.setUser(u);
 
@@ -94,7 +105,21 @@ public class GiftsController {
             gift.setGiftChain(giftChains.findOne(giftChain.getId()));
         }
 
-		gifts.save(gift);
+        gifts.save(gift); // This generates the id, needed for the images.
+
+        byte[] imageBytes = IOUtils.toByteArray(image.getInputStream());
+        GiftImageFileManager imgMan = GiftImageFileManager.get();
+
+        // versiones
+        imgMan.saveImage(gift, Gift.SIZE_FULL, new ByteArrayInputStream(imageBytes));
+        imgMan.saveImage(gift, Gift.SIZE_MEDIUM, new ByteArrayInputStream(imageBytes));
+        imgMan.saveImage(gift, Gift.SIZE_SMALL, new ByteArrayInputStream(imageBytes));
+
+        gift.setImageUrlFull(imgMan.getImagePath(gift, Gift.SIZE_FULL).toString());
+        gift.setImageUrlMedium(imgMan.getImagePath(gift, Gift.SIZE_MEDIUM).toString());
+        gift.setImageUrlSmall(imgMan.getImagePath(gift, Gift.SIZE_SMALL).toString());
+
+        gifts.save(gift); // Update the gift
 		return gift;
 	}
 

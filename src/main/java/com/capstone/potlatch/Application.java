@@ -5,6 +5,7 @@ import com.capstone.potlatch.models.GiftRepository;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.embedded.MultiPartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+import javax.servlet.MultipartConfigElement;
 import javax.sql.DataSource;
 
 @Import(OAuth2SecurityConfiguration.class)
@@ -38,6 +40,8 @@ import javax.sql.DataSource;
 // automatically discovered and connected to the DispatcherServlet.
 @ComponentScan
 public class Application extends RepositoryRestMvcConfiguration {
+
+    private static final String MAX_REQUEST_SIZE = "50MB";
 
     public static DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
@@ -69,6 +73,17 @@ public class Application extends RepositoryRestMvcConfiguration {
         hibernateJpaVendorAdapter.setGenerateDdl(true);
         hibernateJpaVendorAdapter.setDatabase(Database.MYSQL);
         return hibernateJpaVendorAdapter;
+    }
+
+
+    // This configuration element adds the ability to accept multipart
+    // requests to the web container.
+    @Bean
+    public MultipartConfigElement multipartConfigElement() {
+        final MultiPartConfigFactory factory = new MultiPartConfigFactory();
+        factory.setMaxFileSize(MAX_REQUEST_SIZE);
+        factory.setMaxRequestSize(MAX_REQUEST_SIZE);
+        return factory.createMultipartConfig();
     }
 
 	public static void main(String[] args) {

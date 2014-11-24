@@ -27,13 +27,19 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 //@JsonIdentityInfo(generator =  ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Gift {
+    public static final String SIZE_FULL = "full";
+    public static final String SIZE_MEDIUM = "medium";
+    public static final String SIZE_SMALL = "small";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
 	private String title;
 	private String description;
-	private String imageUrl;
+	private String imageUrlFull;
+	private String imageUrlMedium;
+	private String imageUrlSmall;
 	@ElementCollection
 	private Set<Long> touchedByUserIds = new HashSet<Long>();
 	@ElementCollection
@@ -70,12 +76,28 @@ public class Gift {
         this.description = description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImageUrlFull() {
+        return imageUrlFull;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageUrlFull(String imageUrlFull) {
+        this.imageUrlFull = imageUrlFull;
+    }
+
+    public String getImageUrlMedium() {
+        return imageUrlMedium;
+    }
+
+    public void setImageUrlMedium(String imageUrlMedium) {
+        this.imageUrlMedium = imageUrlMedium;
+    }
+
+    public String getImageUrlSmall() {
+        return imageUrlSmall;
+    }
+
+    public void setImageUrlSmall(String imageUrlSmall) {
+        this.imageUrlSmall = imageUrlSmall;
     }
 
     public Set<Long> getTouchedByUserIds() {
