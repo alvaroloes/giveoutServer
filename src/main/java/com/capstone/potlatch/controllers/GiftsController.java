@@ -36,6 +36,7 @@ import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
@@ -105,31 +106,21 @@ public class GiftsController {
             gift.setGiftChain(giftChains.findOne(giftChain.getId()));
         }
 
-        gifts.save(gift); // This generates the id, needed for the images.
+        gifts.save(gift); // This generates the id, needed for generating the images.
 
-        byte[] imageBytes = IOUtils.toByteArray(image.getInputStream());
-        GiftImageFileManager imgMan = GiftImageFileManager.get();
-
-        // versiones
-        imgMan.saveImage(gift, Gift.SIZE_FULL, new ByteArrayInputStream(imageBytes));
-        imgMan.saveImage(gift, Gift.SIZE_MEDIUM, new ByteArrayInputStream(imageBytes));
-        imgMan.saveImage(gift, Gift.SIZE_SMALL, new ByteArrayInputStream(imageBytes));
-
-        gift.setImageUrlFull(imgMan.getImagePath(gift, Gift.SIZE_FULL).toString());
-        gift.setImageUrlMedium(imgMan.getImagePath(gift, Gift.SIZE_MEDIUM).toString());
-        gift.setImageUrlSmall(imgMan.getImagePath(gift, Gift.SIZE_SMALL).toString());
-
-        gifts.save(gift); // Update the gift
+        saveImages(gift, image);
 		return gift;
 	}
 
-	@PreAuthorize("hasRole(mobile)")
-	@RequestMapping(value = Routes.GIFTS_ID_PATH, method = RequestMethod.PUT)
+    // Spring doesn't like PUT method with request body parameters so we use a different url for updating gifts
+    @PreAuthorize("hasRole(mobile)")
+	@RequestMapping(value = Routes.GIFTS_UPDATE_PATH, method = RequestMethod.POST)
 	public @ResponseBody Gift update(
            @PathVariable("id") long id,
-           @RequestBody Gift gift,
+           @RequestParam("gift") String giftString,
            Principal p,
            HttpServletResponse response) throws IOException {
+
         Gift oldGift = gifts.findOne(id);
         if( oldGift == null) {
             response.sendError(HttpStatus.NOT_FOUND.value());
@@ -143,6 +134,8 @@ public class GiftsController {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), "You are not the owner of this gift");
             return null;
         }
+
+        Gift gift = new ObjectMapper().readValue(UriEncoder.decode(giftString), Gift.class);
 
         gift.setUser(currentUser);
         gift.setId(id);
@@ -165,6 +158,9 @@ public class GiftsController {
 
         }
 
+        gift.setImageUrlSmall(oldGift.getImageUrlSmall());
+        gift.setImageUrlMedium(oldGift.getImageUrlMedium());
+        gift.setImageUrlFull(oldGift.getImageUrlFull());
 		gifts.save(gift);
 
         long giftsRemaining = gifts.countByGiftChain(oldGiftChain);
@@ -175,6 +171,67 @@ public class GiftsController {
 
 		return gift;
 	}
+
+    @PreAuthorize("hasRole(mobile)")
+    @RequestMapping(value = Routes.GIFTS_UPDATE_IMAGE_PATH, method = RequestMethod.POST)
+    public @ResponseBody Gift updateImages(
+            @PathVariable("id") long id,
+            @RequestParam("image") MultipartFile image,
+            Principal p,
+            HttpServletResponse response) throws IOException {
+        Gift gift = gifts.findOne(id);
+        if( gift == null) {
+            response.sendError(HttpStatus.NOT_FOUND.value());
+            return null;
+        }
+
+        User currentUser = users.findByUsername(p.getName());
+        if (gift.getUser().getId() != currentUser.getId()) {
+            response.sendError(HttpStatus.UNAUTHORIZED.value(), "You are not the owner of this gift");
+            return null;
+        }
+
+        saveImages(gift, image);
+        return gift;
+    }
+
+    private void saveImages(Gift gift, MultipartFile image) throws IOException {
+        if (image == null || image.isEmpty()) return;
+
+        byte[] imageBytes = IOUtils.toByteArray(image.getInputStream());
+        GiftImageFileManager imgMan = GiftImageFileManager.get();
+
+        // TODO: We should resize the images with, for example, this library: https://github.com/thebuzzmedia/imgscalr
+        // Now we simply create the three versions to allow the client code work properly
+        imgMan.saveImage(gift, Gift.SIZE_FULL, new ByteArrayInputStream(imageBytes));
+        gift.setImageUrlFull(imgMan.getImagePath(gift, Gift.SIZE_FULL).toString());
+
+        imgMan.saveImage(gift, Gift.SIZE_MEDIUM, new ByteArrayInputStream(imageBytes));
+        gift.setImageUrlMedium(imgMan.getImagePath(gift, Gift.SIZE_MEDIUM).toString());
+
+        imgMan.saveImage(gift, Gift.SIZE_SMALL, new ByteArrayInputStream(imageBytes));
+        gift.setImageUrlSmall(imgMan.getImagePath(gift, Gift.SIZE_SMALL).toString());
+
+        gifts.save(gift);
+    }
+
+    @RequestMapping(value = Routes.GIFTS_IMAGE_PATH, method = RequestMethod.GET)
+    public @ResponseBody void getImage(
+            @PathVariable("id") long id,
+            @PathVariable("size") String size,
+            HttpServletResponse response) throws IOException {
+        Gift gift = gifts.findOne(id);
+        if( gift == null) {
+            response.sendError(HttpStatus.NOT_FOUND.value());
+            return;
+        }
+
+        try {
+            GiftImageFileManager.get().copyImage(gift, size, response.getOutputStream());
+        } catch (FileNotFoundException e) {
+            response.sendError(HttpStatus.NOT_FOUND.value());
+        }
+    }
 
 
     @PreAuthorize("hasRole(mobile)")

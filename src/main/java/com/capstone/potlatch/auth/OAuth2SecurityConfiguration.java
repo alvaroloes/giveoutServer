@@ -76,6 +76,7 @@ public class OAuth2SecurityConfiguration {
         public void configure(WebSecurity web) throws Exception {
             web.ignoring()
                 .antMatchers(HttpMethod.GET,
+                    "/gifts/*/image/*",
                     Routes.GIFTS_PATH,
                     Routes.GIFTS_CHAIN_PATH,
                     Routes.TOP_GIVERS_PATH

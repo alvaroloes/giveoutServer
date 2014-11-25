@@ -2,8 +2,10 @@ package com.capstone.potlatch.util;
 
 import com.capstone.potlatch.models.Gift;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,13 +38,13 @@ public class GiftImageFileManager {
 		return dirPath.resolve("image_" + size + ".jpg");
 	}
 
-//	public void copyData(Gift gift, String size, OutputStream out) throws IOException {
-//		Path source = getImagePath(gift, size);
-//		if(!Files.exists(source)){
-//			throw new FileNotFoundException("Unable to find the referenced image file for gift id:"+gift.getId());
-//		}
-//		Files.copy(source, out);
-//	}
+	public void copyImage(Gift gift, String size, OutputStream out) throws IOException {
+		Path source = getImagePath(gift, size);
+		if(!Files.exists(source)){
+			throw new FileNotFoundException("Unable to find the referenced image file for gift id:"+gift.getId());
+		}
+		Files.copy(source, out);
+	}
 
 	public void saveImage(Gift gift, String size, InputStream giftImage) throws IOException{
 		assert(giftImage != null);
