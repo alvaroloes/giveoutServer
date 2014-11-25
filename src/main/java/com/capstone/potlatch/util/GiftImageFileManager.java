@@ -2,14 +2,14 @@ package com.capstone.potlatch.util;
 
 import com.capstone.potlatch.models.Gift;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 
 public class GiftImageFileManager {
 
@@ -46,11 +46,11 @@ public class GiftImageFileManager {
 		Files.copy(source, out);
 	}
 
-	public void saveImage(Gift gift, String size, InputStream giftImage) throws IOException{
+	public void saveImage(Gift gift, String size, BufferedImage giftImage) throws IOException{
 		assert(giftImage != null);
 		
 		Path target = getImagePath(gift, size);
-		Files.copy(giftImage, target, StandardCopyOption.REPLACE_EXISTING);
+        ImageIO.write(giftImage, "jpeg", target.toFile());
 	}
 	
 }

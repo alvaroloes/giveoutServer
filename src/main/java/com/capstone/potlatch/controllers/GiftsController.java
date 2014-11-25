@@ -24,7 +24,7 @@ import com.capstone.potlatch.models.*;
 import com.capstone.potlatch.util.GiftImageFileManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
+import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -34,8 +34,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.yaml.snakeyaml.util.UriEncoder;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
+import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
@@ -198,19 +199,20 @@ public class GiftsController {
     private void saveImages(Gift gift, MultipartFile image) throws IOException {
         if (image == null || image.isEmpty()) return;
 
-        byte[] imageBytes = IOUtils.toByteArray(image.getInputStream());
+        BufferedImage img = ImageIO.read(image.getInputStream());
         GiftImageFileManager imgMan = GiftImageFileManager.get();
 
-        // TODO: We should resize the images with, for example, this library: https://github.com/thebuzzmedia/imgscalr
         // Now we simply create the three versions to allow the client code work properly
-        imgMan.saveImage(gift, Gift.SIZE_FULL, new ByteArrayInputStream(imageBytes));
-        gift.setImageUrlFull(imgMan.getImagePath(gift, Gift.SIZE_FULL).toString());
+        imgMan.saveImage(gift, Gift.SIZE_FULL, img);
+        gift.setImageUrlFull(Routes.GIFTS_IMAGE_PATH.replace("{id}", String.valueOf(gift.getId())).replace("{size}", Gift.SIZE_FULL));
 
-        imgMan.saveImage(gift, Gift.SIZE_MEDIUM, new ByteArrayInputStream(imageBytes));
-        gift.setImageUrlMedium(imgMan.getImagePath(gift, Gift.SIZE_MEDIUM).toString());
+        BufferedImage scaledImg = Scalr.resize(img, 640);
+        imgMan.saveImage(gift, Gift.SIZE_MEDIUM, scaledImg);
+        gift.setImageUrlMedium(Routes.GIFTS_IMAGE_PATH.replace("{id}", String.valueOf(gift.getId())).replace("{size}", Gift.SIZE_MEDIUM));
 
-        imgMan.saveImage(gift, Gift.SIZE_SMALL, new ByteArrayInputStream(imageBytes));
-        gift.setImageUrlSmall(imgMan.getImagePath(gift, Gift.SIZE_SMALL).toString());
+        scaledImg = Scalr.resize(img, 320);
+        imgMan.saveImage(gift, Gift.SIZE_SMALL, scaledImg);
+        gift.setImageUrlSmall(Routes.GIFTS_IMAGE_PATH.replace("{id}", String.valueOf(gift.getId())).replace("{size}", Gift.SIZE_SMALL));
 
         gifts.save(gift);
     }
