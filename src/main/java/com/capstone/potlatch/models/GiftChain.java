@@ -1,8 +1,7 @@
 package com.capstone.potlatch.models;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.List;
@@ -10,8 +9,11 @@ import java.util.List;
 
 @Entity
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class GiftChain {
+    @Transient
+    @JsonIgnore
+    public boolean includeGifts = false;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,6 +42,9 @@ public class GiftChain {
     }
 
     public List<Gift> getGifts() {
+        if (!includeGifts) {
+            return null;
+        }
         return gifts;
     }
 

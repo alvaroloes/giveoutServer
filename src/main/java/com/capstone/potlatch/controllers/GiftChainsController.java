@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Collection;
+import java.util.List;
 
 @Controller
 public class GiftChainsController {
@@ -47,6 +48,10 @@ public class GiftChainsController {
            @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
            @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit) {
         PageRequest pageRequest = new PageRequest(page, limit);
-        return Lists.newArrayList(giftChains.findAll(pageRequest));
+        List<GiftChain> giftChainList = Lists.newArrayList(giftChains.findAll(pageRequest));
+        for(GiftChain giftChain : giftChainList) {
+            giftChain.includeGifts = true;
+        }
+        return giftChainList;
     }
 }

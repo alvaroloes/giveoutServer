@@ -41,6 +41,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Controller
@@ -60,11 +61,16 @@ public class GiftsController {
            @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit)
     {
         PageRequest pageRequest = new PageRequest(page, limit);
+        List<Gift> giftList;
         if (title == null) {
-            return Lists.newArrayList(gifts.findByGiftChainIsNotNull(pageRequest));
+            giftList = Lists.newArrayList(gifts.findByGiftChainIsNotNull(pageRequest));
         } else {
-            return Lists.newArrayList(gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest));
+            giftList = Lists.newArrayList(gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest));
         }
+        for(Gift gift : giftList) {
+            gift.includeGiftChain = true;
+        }
+        return giftList;
     }
 
     @PreAuthorize("hasRole(mobile)")
@@ -78,11 +84,16 @@ public class GiftsController {
         User u = users.findByUsername(p.getName());
         PageRequest pageRequest = new PageRequest(page, limit);
 
+        List<Gift> giftList;
         if (title == null) {
-            return Lists.newArrayList(gifts.findByUserId(u.getId(), pageRequest));
+            giftList =  Lists.newArrayList(gifts.findByUserId(u.getId(), pageRequest));
         } else {
-            return Lists.newArrayList(gifts.findByUserIdAndTitleLike(u.getId(), "%" + title + "%", pageRequest));
+            giftList =  Lists.newArrayList(gifts.findByUserIdAndTitleLike(u.getId(), "%" + title + "%", pageRequest));
         }
+        for(Gift gift : giftList) {
+            gift.includeGiftChain = true;
+        }
+        return giftList;
     }
 
 	@PreAuthorize("hasRole(mobile)")

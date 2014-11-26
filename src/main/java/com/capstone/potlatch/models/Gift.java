@@ -3,7 +3,6 @@ package com.capstone.potlatch.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -30,6 +29,10 @@ public class Gift {
     public static final String SIZE_FULL = "full";
     public static final String SIZE_MEDIUM = "medium";
     public static final String SIZE_SMALL = "small";
+
+    @Transient
+    @JsonIgnore
+    public boolean includeGiftChain = false;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -124,29 +127,32 @@ public class Gift {
         this.user = user;
     }
 
-    @JsonIgnore // Ignore property when serializing
+//    @JsonIgnore // Ignore property when serializing
     public GiftChain getGiftChain() {
+        if (!includeGiftChain) {
+            return null;
+        }
         return giftChain;
     }
 
-    @JsonProperty // Include property when deserializing
+//    @JsonProperty // Include property when deserializing
     public void setGiftChain(GiftChain giftChain) {
         this.giftChain = giftChain;
     }
 
     // Only read only properties. I created them to avoid a cycle when serializing the GiftChain gifts
     // (Which have a GiftChain reference...)
-    public Long getGiftChainId() {
-        if (giftChain != null) {
-            return giftChain.getId();
-        }
-        return null;
-    }
-
-    public String getGiftChainName() {
-        if (giftChain != null) {
-            return giftChain.getName();
-        }
-        return null;
-    }
+//    public Long getGiftChainId() {
+//        if (giftChain != null) {
+//            return giftChain.getId();
+//        }
+//        return null;
+//    }
+//
+//    public String getGiftChainName() {
+//        if (giftChain != null) {
+//            return giftChain.getName();
+//        }
+//        return null;
+//    }
 }
