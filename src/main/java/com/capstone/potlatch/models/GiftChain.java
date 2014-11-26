@@ -13,7 +13,7 @@ import java.util.List;
 public class GiftChain {
     @Transient
     @JsonIgnore
-    public boolean includeGifts = false;
+    public boolean allowAccessToGifts = false;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +42,7 @@ public class GiftChain {
     }
 
     public List<Gift> getGifts() {
-        if (!includeGifts) {
+        if (!allowAccessToGifts) {
             return null;
         }
         return gifts;

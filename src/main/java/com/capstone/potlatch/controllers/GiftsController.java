@@ -68,7 +68,7 @@ public class GiftsController {
             giftList = Lists.newArrayList(gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest));
         }
         for(Gift gift : giftList) {
-            gift.includeGiftChain = true;
+            gift.allowAccessToGiftChain = true;
         }
         return giftList;
     }
@@ -91,7 +91,7 @@ public class GiftsController {
             giftList =  Lists.newArrayList(gifts.findByUserIdAndTitleLike(u.getId(), "%" + title + "%", pageRequest));
         }
         for(Gift gift : giftList) {
-            gift.includeGiftChain = true;
+            gift.allowAccessToGiftChain = true;
         }
         return giftList;
     }
@@ -105,10 +105,12 @@ public class GiftsController {
         // In order to send in one request the gift data and the image, the gift data must be
         // sent as a json string encoded along with the image.
         // Here we parse it into a Gift object.
+        System.out.println(UriEncoder.decode(giftString));
         Gift gift = new ObjectMapper().readValue(UriEncoder.decode(giftString), Gift.class);
 
         User u = users.findByUsername(p.getName());
         gift.setUser(u);
+        gift.allowAccessToGiftChain = true;
 
         GiftChain giftChain = gift.getGiftChain();
         if (giftChain != null) {
@@ -139,6 +141,7 @@ public class GiftsController {
             return null;
         }
 
+        oldGift.allowAccessToGiftChain = true;
         GiftChain oldGiftChain = oldGift.getGiftChain();
 
         User currentUser = users.findByUsername(p.getName());
@@ -151,6 +154,7 @@ public class GiftsController {
 
         gift.setUser(currentUser);
         gift.setId(id);
+        gift.allowAccessToGiftChain = true;
 
         GiftChain giftChain = gift.getGiftChain();
         if (giftChain != null) {
@@ -196,6 +200,8 @@ public class GiftsController {
             response.sendError(HttpStatus.NOT_FOUND.value());
             return null;
         }
+
+        gift.allowAccessToGiftChain = true;
 
         User currentUser = users.findByUsername(p.getName());
         if (gift.getUser().getId() != currentUser.getId()) {
@@ -288,6 +294,7 @@ public class GiftsController {
             response.setStatus(404);
             return null;
         }
+        gift.allowAccessToGiftChain = true;
 
         long userId = users.findByUsername(p.getName()).getId();
         Set<Long> touchedBy = gift.getTouchedByUserIds();
@@ -316,6 +323,7 @@ public class GiftsController {
             response.setStatus(404);
             return null;
         }
+        gift.allowAccessToGiftChain = true;
 
         long userId = users.findByUsername(p.getName()).getId();
         Set<Long> markedAsInappropriateBy = gift.getMarkedInappropriateByUserIds();

@@ -50,7 +50,7 @@ public class GiftChainsController {
         PageRequest pageRequest = new PageRequest(page, limit);
         List<GiftChain> giftChainList = Lists.newArrayList(giftChains.findAll(pageRequest));
         for(GiftChain giftChain : giftChainList) {
-            giftChain.includeGifts = true;
+            giftChain.allowAccessToGifts = true;
         }
         return giftChainList;
     }

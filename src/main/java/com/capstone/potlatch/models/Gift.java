@@ -32,7 +32,7 @@ public class Gift {
 
     @Transient
     @JsonIgnore
-    public boolean includeGiftChain = false;
+    public boolean allowAccessToGiftChain = false;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -129,7 +129,7 @@ public class Gift {
 
 //    @JsonIgnore // Ignore property when serializing
     public GiftChain getGiftChain() {
-        if (!includeGiftChain) {
+        if (!allowAccessToGiftChain) {
             return null;
         }
         return giftChain;
