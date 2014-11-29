@@ -21,9 +21,10 @@ package com.capstone.potlatch.controllers;
 import com.capstone.potlatch.Constants;
 import com.capstone.potlatch.Routes;
 import com.capstone.potlatch.models.*;
-import com.capstone.potlatch.util.GiftImageFileManager;
+import com.capstone.potlatch.util.ImageFileManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -46,8 +47,9 @@ import java.util.Set;
 
 @Controller
 public class GiftsController {
+    private static final String GIFT_ROOT_PATH = StringUtils.stripStart(Routes.GIFTS_PATH, "/");
 
-	@Autowired
+    @Autowired
 	private GiftRepository gifts;
 	@Autowired
 	private GiftChainRepository giftChains;
@@ -105,7 +107,6 @@ public class GiftsController {
         // In order to send in one request the gift data and the image, the gift data must be
         // sent as a json string encoded along with the image.
         // Here we parse it into a Gift object.
-        System.out.println(UriEncoder.decode(giftString));
         Gift gift = new ObjectMapper().readValue(UriEncoder.decode(giftString), Gift.class);
 
         User u = users.findByUsername(p.getName());
@@ -217,18 +218,17 @@ public class GiftsController {
         if (image == null || image.isEmpty()) return;
 
         BufferedImage img = ImageIO.read(image.getInputStream());
-        GiftImageFileManager imgMan = GiftImageFileManager.get();
+        ImageFileManager imgMan = ImageFileManager.get(GIFT_ROOT_PATH);
 
-        // Now we simply create the three versions to allow the client code work properly
-        imgMan.saveImage(gift, Gift.SIZE_FULL, img);
+        imgMan.saveImage(gift.getId(), Gift.SIZE_FULL, img);
         gift.setImageUrlFull(Routes.GIFTS_IMAGE_PATH.replace("{id}", String.valueOf(gift.getId())).replace("{size}", Gift.SIZE_FULL));
 
         BufferedImage scaledImg = Scalr.resize(img, 640);
-        imgMan.saveImage(gift, Gift.SIZE_MEDIUM, scaledImg);
+        imgMan.saveImage(gift.getId(), Gift.SIZE_MEDIUM, scaledImg);
         gift.setImageUrlMedium(Routes.GIFTS_IMAGE_PATH.replace("{id}", String.valueOf(gift.getId())).replace("{size}", Gift.SIZE_MEDIUM));
 
         scaledImg = Scalr.resize(img, 320);
-        imgMan.saveImage(gift, Gift.SIZE_SMALL, scaledImg);
+        imgMan.saveImage(gift.getId(), Gift.SIZE_SMALL, scaledImg);
         gift.setImageUrlSmall(Routes.GIFTS_IMAGE_PATH.replace("{id}", String.valueOf(gift.getId())).replace("{size}", Gift.SIZE_SMALL));
 
         gifts.save(gift);
@@ -246,7 +246,7 @@ public class GiftsController {
         }
 
         try {
-            GiftImageFileManager.get().copyImage(gift, size, response.getOutputStream());
+            ImageFileManager.get(GIFT_ROOT_PATH).copyImage(gift.getId(), size, response.getOutputStream());
         } catch (FileNotFoundException e) {
             response.sendError(HttpStatus.NOT_FOUND.value());
         }

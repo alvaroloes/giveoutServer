@@ -22,6 +22,8 @@ public interface Routes {
     public static final String GIFTS_CHAIN_PATH = GIFTS_PATH + "/chains";
 
     public static final String USERS_PATH = "/users";
+    public static final String USERS_ID_PATH = USERS_PATH + "/{id}";
+    public static final String USERS_IMAGE_PATH = USERS_ID_PATH + "/image/{size}";
     public static final String CURRENT_USER_PATH = USERS_PATH + "/current";
     public static final String TOP_GIVERS_PATH = USERS_PATH + "/top";
 }

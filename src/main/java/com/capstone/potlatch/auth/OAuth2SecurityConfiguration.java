@@ -77,6 +77,7 @@ public class OAuth2SecurityConfiguration {
             web.ignoring()
                 .antMatchers(HttpMethod.GET,
                     "/gifts/*/image/*",
+                    "/users/*/image/*",
                     Routes.GIFTS_PATH,
                     Routes.GIFTS_CHAIN_PATH,
                     Routes.TOP_GIVERS_PATH

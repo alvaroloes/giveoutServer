@@ -12,6 +12,8 @@ import java.util.List;
        indexes = @Index(columnList = "username", unique = true))
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
+    public static final String SIZE_FULL = "full";
+    public static final String SIZE_MEDIUM = "medium";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,6 +21,8 @@ public class User {
     private String username;
     private transient String password;
     private boolean enabled = true; //This should be default to true
+    private String imageUrlFull;
+    private String imageUrlMedium;
 
     @OneToMany(mappedBy="user", fetch = FetchType.EAGER)
     @JsonIgnore
@@ -92,5 +96,21 @@ public class User {
 
     public void setGiftTouches(Long giftTouches) {
         this.giftTouches = giftTouches;
+    }
+
+    public String getImageUrlFull() {
+        return imageUrlFull;
+    }
+
+    public void setImageUrlFull(String imageUrlFull) {
+        this.imageUrlFull = imageUrlFull;
+    }
+
+    public String getImageUrlMedium() {
+        return imageUrlMedium;
+    }
+
+    public void setImageUrlMedium(String imageUrlMedium) {
+        this.imageUrlMedium = imageUrlMedium;
     }
 }
