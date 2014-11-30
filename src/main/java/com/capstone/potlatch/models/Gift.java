@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,6 +53,19 @@ public class Gift {
     private User user;
     @ManyToOne(fetch = FetchType.EAGER, optional = true)
     private GiftChain giftChain;
+
+    private Date createdAt;
+    private Date updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
+    }
 
 	public Gift() {}
 
@@ -127,7 +141,6 @@ public class Gift {
         this.user = user;
     }
 
-//    @JsonIgnore // Ignore property when serializing
     public GiftChain getGiftChain() {
         if (!allowAccessToGiftChain) {
             return null;
@@ -135,24 +148,15 @@ public class Gift {
         return giftChain;
     }
 
-//    @JsonProperty // Include property when deserializing
     public void setGiftChain(GiftChain giftChain) {
         this.giftChain = giftChain;
     }
 
-    // Only read only properties. I created them to avoid a cycle when serializing the GiftChain gifts
-    // (Which have a GiftChain reference...)
-//    public Long getGiftChainId() {
-//        if (giftChain != null) {
-//            return giftChain.getId();
-//        }
-//        return null;
-//    }
-//
-//    public String getGiftChainName() {
-//        if (giftChain != null) {
-//            return giftChain.getName();
-//        }
-//        return null;
-//    }
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
 }

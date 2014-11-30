@@ -26,6 +26,7 @@ import com.capstone.potlatch.models.GiftRepository;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -47,7 +48,7 @@ public class GiftChainsController {
     public @ResponseBody Collection<GiftChain> list(
            @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
            @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit) {
-        PageRequest pageRequest = new PageRequest(page, limit);
+        PageRequest pageRequest = new PageRequest(page, limit, new Sort(Sort.Direction.DESC, "createdAt"));
         List<GiftChain> giftChainList = Lists.newArrayList(giftChains.findAll(pageRequest));
         for(GiftChain giftChain : giftChainList) {
             giftChain.allowAccessToGifts = true;

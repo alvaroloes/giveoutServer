@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -62,7 +63,7 @@ public class GiftsController {
            @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
            @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit)
     {
-        PageRequest pageRequest = new PageRequest(page, limit);
+        PageRequest pageRequest = new PageRequest(page, limit, new Sort(Sort.Direction.DESC, "createdAt"));
         List<Gift> giftList;
         if (title == null) {
             giftList = Lists.newArrayList(gifts.findByGiftChainIsNotNull(pageRequest));
@@ -84,7 +85,7 @@ public class GiftsController {
            Principal p)
     {
         User u = users.findByUsername(p.getName());
-        PageRequest pageRequest = new PageRequest(page, limit);
+        PageRequest pageRequest = new PageRequest(page, limit, new Sort(Sort.Direction.DESC, "createdAt"));
 
         List<Gift> giftList;
         if (title == null) {

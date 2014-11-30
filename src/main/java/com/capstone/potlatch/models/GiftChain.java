@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 
@@ -22,6 +23,19 @@ public class GiftChain {
 
     @OneToMany(mappedBy="giftChain", fetch = FetchType.EAGER)
     private List<Gift> gifts;
+
+    private Date createdAt;
+    private Date updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = new Date();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = new Date();
+    }
 
     public GiftChain() {}
 
@@ -52,5 +66,11 @@ public class GiftChain {
         this.gifts = gifts;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
 }
