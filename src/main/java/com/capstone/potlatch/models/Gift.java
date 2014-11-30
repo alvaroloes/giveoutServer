@@ -44,9 +44,9 @@ public class Gift {
 	private String imageUrlFull;
 	private String imageUrlMedium;
 	private String imageUrlSmall;
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<Long> touchedByUserIds = new HashSet<Long>();
-	@ElementCollection
+	@ElementCollection(fetch = FetchType.EAGER)
 	private Set<Long> markedInappropriateByUserIds = new HashSet<Long>();
 
     @ManyToOne(optional=false, fetch = FetchType.EAGER)

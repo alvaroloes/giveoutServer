@@ -9,6 +9,7 @@ public interface Routes {
     public static final String LIMIT_PARAMETER = "limit";
     public static final String TOP_KIND_PARAMETER = "kind";
     public static final String REGRET_PARAMETER = "regret";
+    public static final String NOT_FLAGGED_BY_USER_ID_PARAMETER = "notFlagedBy";
 
     public static final String GIFTS_PATH = "/gifts";
     public static final String GIFTS_ID_PATH = GIFTS_PATH + "/{id}";

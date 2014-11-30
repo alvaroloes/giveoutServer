@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.imgscalr.Scalr;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -61,15 +62,20 @@ public class GiftsController {
     public @ResponseBody Collection<Gift> list(
            @RequestParam(value = Routes.TITLE_PARAMETER, required = false) String title,
            @RequestParam(value = Routes.PAGE_PARAMETER, required = false, defaultValue = "0") int page,
-           @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit)
+           @RequestParam(value = Routes.LIMIT_PARAMETER, required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) int limit,
+           @RequestParam(value = Routes.NOT_FLAGGED_BY_USER_ID_PARAMETER, required = false) Long notFlaggedByUserId)
     {
         PageRequest pageRequest = new PageRequest(page, limit, new Sort(Sort.Direction.DESC, "createdAt"));
-        List<Gift> giftList;
+        Page<Gift> giftsPage;
         if (title == null) {
-            giftList = Lists.newArrayList(gifts.findByGiftChainIsNotNull(pageRequest));
+            giftsPage = notFlaggedByUserId == null ? gifts.findByGiftChainIsNotNull(pageRequest)
+                                                   : gifts.findByGiftChainIsNotNullAndUserNotFlagAsInappropriate(notFlaggedByUserId, pageRequest);
         } else {
-            giftList = Lists.newArrayList(gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest));
+            giftsPage = notFlaggedByUserId == null ? gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest)
+                                                   : gifts.findByGiftChainIsNotNullAndTitleLikeAndUserNotFlagAsInappropriate("%"+title+"%", notFlaggedByUserId, pageRequest);
         }
+
+        List<Gift> giftList = Lists.newArrayList(giftsPage);
         for(Gift gift : giftList) {
             gift.allowAccessToGiftChain = true;
         }
