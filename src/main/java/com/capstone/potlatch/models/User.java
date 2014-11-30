@@ -40,6 +40,8 @@ public class User {
         this.id = u.id;
         this.username = u.username;
         this.enabled = u.enabled;
+        this.imageUrlFull = u.imageUrlFull;
+        this.imageUrlMedium = u.imageUrlMedium;
         this.gifts = u.gifts;
         if (giftCount >= 0) {
             this.giftCount = giftCount;
