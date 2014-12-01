@@ -16,13 +16,13 @@
  * 
  */
 
-package com.capstone.potlatch.controllers;
+package com.capstone.giveout.controllers;
 
-import com.capstone.potlatch.Constants;
-import com.capstone.potlatch.Routes;
-import com.capstone.potlatch.models.User;
-import com.capstone.potlatch.models.UserRepository;
-import com.capstone.potlatch.util.ImageFileManager;
+import com.capstone.giveout.Constants;
+import com.capstone.giveout.Routes;
+import com.capstone.giveout.models.User;
+import com.capstone.giveout.models.UserRepository;
+import com.capstone.giveout.util.ImageFileManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -70,7 +70,7 @@ public class UsersController {
         // Here we parse it into a User object.
         User user = new ObjectMapper().readValue(UriEncoder.decode(userString), User.class);
 
-        UserDetails u = com.capstone.potlatch.auth.User.create(user.getUsername(), user.getPassword(), "USER");
+        UserDetails u = com.capstone.giveout.auth.User.create(user.getUsername(), user.getPassword(), "USER");
         userDetailsManager.createUser(u);
 
 		user = users.findByUsername(user.getUsername());

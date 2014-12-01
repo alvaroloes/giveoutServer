@@ -1,4 +1,4 @@
-package com.capstone.potlatch.util;
+package com.capstone.giveout.util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

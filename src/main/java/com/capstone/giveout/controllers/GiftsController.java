@@ -16,12 +16,12 @@
  * 
  */
 
-package com.capstone.potlatch.controllers;
+package com.capstone.giveout.controllers;
 
-import com.capstone.potlatch.Constants;
-import com.capstone.potlatch.Routes;
-import com.capstone.potlatch.models.*;
-import com.capstone.potlatch.util.ImageFileManager;
+import com.capstone.giveout.Constants;
+import com.capstone.giveout.Routes;
+import com.capstone.giveout.models.*;
+import com.capstone.giveout.util.ImageFileManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +72,7 @@ public class GiftsController {
                                                    : gifts.findByGiftChainIsNotNullAndUserNotFlagAsInappropriate(notFlaggedByUserId, pageRequest);
         } else {
             giftsPage = notFlaggedByUserId == null ? gifts.findByGiftChainIsNotNullAndTitleLike("%"+title+"%", pageRequest)
-                                                   : gifts.findByGiftChainIsNotNullAndTitleLikeAndUserNotFlagAsInappropriate("%"+title+"%", notFlaggedByUserId, pageRequest);
+                                                   : gifts.findByGiftChainIsNotNullAndTitleLikeAndUserNotFlagAsInappropriate("%" + title + "%", notFlaggedByUserId, pageRequest);
         }
 
         List<Gift> giftList = Lists.newArrayList(giftsPage);
@@ -272,6 +272,7 @@ public class GiftsController {
             response.sendError(HttpStatus.NOT_FOUND.value());
             return;
         }
+        gift.allowAccessToGiftChain = true;
 
         User currentUser = users.findByUsername(p.getName());
         if (gift.getUser().getId() != currentUser.getId()) {

@@ -1,7 +1,7 @@
-package com.capstone.potlatch;
+package com.capstone.giveout;
 
-import com.capstone.potlatch.auth.OAuth2SecurityConfiguration;
-import com.capstone.potlatch.models.GiftRepository;
+import com.capstone.giveout.auth.OAuth2SecurityConfiguration;
+import com.capstone.giveout.models.GiftRepository;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -62,7 +62,7 @@ public class Application extends RepositoryRestMvcConfiguration {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource);
         lef.setJpaVendorAdapter(jpaVendorAdapter);
-        lef.setPackagesToScan("com.capstone.potlatch.models");
+        lef.setPackagesToScan("com.capstone.giveout.models");
         return lef;
     }
 

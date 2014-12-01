@@ -16,13 +16,13 @@
  * 
  */
 
-package com.capstone.potlatch.controllers;
+package com.capstone.giveout.controllers;
 
-import com.capstone.potlatch.Constants;
-import com.capstone.potlatch.Routes;
-import com.capstone.potlatch.models.GiftChain;
-import com.capstone.potlatch.models.GiftChainRepository;
-import com.capstone.potlatch.models.GiftRepository;
+import com.capstone.giveout.Constants;
+import com.capstone.giveout.Routes;
+import com.capstone.giveout.models.GiftChain;
+import com.capstone.giveout.models.GiftChainRepository;
+import com.capstone.giveout.models.GiftRepository;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;

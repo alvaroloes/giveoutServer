@@ -4,7 +4,7 @@
 **
 **
 */
-package com.capstone.potlatch.auth;
+package com.capstone.giveout.auth;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

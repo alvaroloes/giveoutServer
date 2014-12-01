@@ -1,4 +1,4 @@
-package com.capstone.potlatch.models;
+package com.capstone.giveout.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;

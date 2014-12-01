@@ -4,7 +4,7 @@
 **
 **
 */
-package com.capstone.potlatch.auth;
+package com.capstone.giveout.auth;
 
 import java.util.Collection;
 import java.util.Collections;

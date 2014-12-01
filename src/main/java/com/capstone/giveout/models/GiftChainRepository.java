@@ -1,4 +1,4 @@
-package com.capstone.potlatch.models;
+package com.capstone.giveout.models;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;

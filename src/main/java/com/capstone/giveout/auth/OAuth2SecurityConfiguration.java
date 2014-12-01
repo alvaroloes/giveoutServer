@@ -1,7 +1,7 @@
-package com.capstone.potlatch.auth;
+package com.capstone.giveout.auth;
 
-import com.capstone.potlatch.Application;
-import com.capstone.potlatch.Routes;
+import com.capstone.giveout.Application;
+import com.capstone.giveout.Routes;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.springframework.beans.factory.annotation.Autowired;

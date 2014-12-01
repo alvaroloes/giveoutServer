@@ -1,4 +1,4 @@
-package com.capstone.potlatch.models;
+package com.capstone.giveout.models;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -40,6 +40,7 @@ public class Gift {
 	private long id;
 
 	private String title;
+    @Lob
 	private String description;
 	private String imageUrlFull;
 	private String imageUrlMedium;

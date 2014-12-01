@@ -1,4 +1,4 @@
-package com.capstone.potlatch;
+package com.capstone.giveout;
 
 /**
  * Created by alvaro on 2/11/14.
